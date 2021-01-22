@@ -1,0 +1,27 @@
+version: "3.6"
+
+services:
+  # minio:
+  #   image: minio/minio
+  #   ports:
+  #     - "9000:9000"
+  #   volumes:
+  #     - ${PWD}/minio/data:/data
+  #     - ${PWD}/minio/config:/root/.minio
+  #   command: "server /data"
+
+  redis:
+    image: redis:5-alpine
+    ports:
+      - "6379:6379"
+
+  postgres:
+    image: "postgres:9.6.6"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ${PWD}/db/postgres-data:/var/lib/postgresql/data
+      # - ${PWD}/db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - 5432:5432
