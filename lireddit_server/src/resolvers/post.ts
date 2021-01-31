@@ -6,7 +6,7 @@ import { Arg, Ctx, Int, Mutation, Query, Resolver } from "type-graphql";
 export class PostResolver {
 
     @Query(() => [Post])
-    async posts(@Ctx(){ em }: MyContext ): Promise<Post[]>{\
+    async posts(@Ctx(){ em }: MyContext ): Promise<Post[]>{
         return em.find(Post, {})
     }
 
@@ -41,7 +41,7 @@ export class PostResolver {
                 await em.persistAndFlush(post)
                 return post
             }
-        } 
+        }
 
         return null
     }

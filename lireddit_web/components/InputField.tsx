@@ -8,7 +8,7 @@ import { useField } from "formik";
 import React, { InputHTMLAttributes } from "react";
 
 type InputFieldProps = InputHTMLAttributes<HTMLInputElement> & {
-  label: string;
+  label?: string;
   name: string;
 };
 

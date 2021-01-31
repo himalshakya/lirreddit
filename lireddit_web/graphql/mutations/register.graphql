@@ -1,11 +1,34 @@
-mutation Register($username: String!, $password: String!){
-    register(options: {username: $username, password: $password}){
-        user {
-            ...RegularUser
-        }
-        errors {
-            field
-            message
-        }
-    }
+mutation Register($options: UsernamePasswordInput!) {
+  register(options: $options) {
+    ...RegularUserResponse
+  }
 }
+
+# # query Login($options:UsernamePasswordInput!){
+#     query Login($username: String!, $password: String!){
+# #   login(options: $options){
+#     login(options: {username: $username, password: $password}){
+#     user {
+#       id
+#       username
+#       createdAt
+#       updatedAt
+#     }
+#     errors {
+#       field
+#       message
+#     }
+#   }
+# }
+
+# mutation Register($username: String!, $password: String!){
+#     register(options: {username: $username, password: $password}){
+#         user {
+#             ...RegularUser
+#         }
+#         errors {
+#             field
+#             message
+#         }
+#     }
+# }
