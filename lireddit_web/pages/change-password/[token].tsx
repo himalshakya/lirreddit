@@ -11,10 +11,9 @@ import { useToast } from "@chakra-ui/react";
 import { withUrqlClient } from "next-urql";
 import { createUrqlClient } from "../../utils/createUrqlClient";
 
-const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
+const ChangePassword: NextPage<{ token: string }> = () => {
   const router = useRouter();
   const [, changePassword] = useChangePasswordMutation();
-  // const [tokenError, setTokenError]  = useState('');
   const toast = useToast();
 
   return (
@@ -22,10 +21,9 @@ const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
       <Formik
         initialValues={{ newPassword: "" }}
         onSubmit={async (values, { setErrors }) => {
-          console.log("Submitting.....")
           const response = await changePassword({
             newPassword: values.newPassword,
-            token,
+            token: typeof router.query.token === 'string' ? router.query.token : "",
           });
           if (response.data?.changePassword.errors) {
             const errorMap = toErrorMap(response.data.changePassword.errors)
@@ -49,7 +47,6 @@ const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
       >
         {({ isSubmitting }) => (
           <Form>
-            <InputField name="token" type="hidden" value={token} />
             <InputField
               name="newPassword"
               placeholder="new password"
@@ -70,12 +67,6 @@ const ChangePassword: NextPage<{ token: string }> = ({ token }) => {
       </Formik>
     </Wrapper>
   );
-};
-
-ChangePassword.getInitialProps = ({ query }) => {
-  return {
-    token: query.token as string,
-  };
 };
 
 export default withUrqlClient(createUrqlClient)(ChangePassword);

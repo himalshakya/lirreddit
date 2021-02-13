@@ -18,8 +18,6 @@ export async function sendEmail(to: string, html: string) {
     auth: {
       user: testAccount.user, // generated ethereal user
       pass: testAccount.pass, // generated ethereal password
-      // user: 'lipc646bpigqbnpc@ethereal.email',
-      // pass: 'ZpEMM3qnhckAmhhZ2u',
     },
   });
 

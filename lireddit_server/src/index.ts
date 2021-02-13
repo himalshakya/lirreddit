@@ -1,7 +1,4 @@
 import "reflect-metadata";
-import { MikroORM } from "@mikro-orm/core";
-// import { Post } from "./entities/Post";
-import microConfig from "./mikro-orm.config";
 import express from "express";
 import { ApolloServer } from "apollo-server-express";
 import { buildSchema } from "type-graphql";
@@ -14,40 +11,55 @@ import { MyContext } from "./types";
 import cors from "cors";
 import { COOKIE_NAME, __prod__ } from "./constants";
 import Redis from "ioredis";
-// import { User } from "./entities/User";
-
+import { User } from "./entities/User";
+import { Post } from "./entities/Post";
+import { createConnection } from "typeorm";
+import path from "path"
+import { Updoot } from "./entities/Updoot";
 
 
 const main = async () => {
-  const orm = await MikroORM.init(microConfig);
-  // await orm.em.nativeDelete(User, {})
+  const conn = await createConnection({
+    type: "postgres",
+    database: "lirreddit3",
+    username: "postgres",
+    password: "postgres",
+    logging: true,
+    synchronize: true,
+    migrations: [path.join(__dirname, "./migrations/*")],
+    entities: [Post, User, Updoot],
+  });
 
-  await orm.getMigrator().up();
+  await conn.runMigrations()
+
+  // await Post.delete({})
 
   const app = express();
 
   const RedisStore = connectRedis(session);
   const redis = new Redis();
-  app.use(cors({
-    origin: 'http://localhost:3000',
-    credentials: true,
-  }))
+  app.use(
+    cors({
+      origin: "http://localhost:3000",
+      credentials: true,
+    })
+  );
 
   app.use(
     session({
-        name: COOKIE_NAME,
+      name: COOKIE_NAME,
       store: new RedisStore({
-          client: redis,
+        client: redis,
         //   disableTTL: true,
-          disableTouch: true
-        }),
-        cookie: {
-            maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
-            httpOnly: true,
-            sameSite: 'lax', //csrf
-            secure: __prod__ // cookie only works in https
-        },
-        saveUninitialized: false,
+        disableTouch: true,
+      }),
+      cookie: {
+        maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
+        httpOnly: true,
+        sameSite: "lax", //csrf
+        secure: __prod__, // cookie only works in https
+      },
+      saveUninitialized: false,
       secret: "randomenvironmentvariable",
       resave: false,
     })
@@ -58,19 +70,14 @@ const main = async () => {
       resolvers: [HelloResolver, PostResolver, UserResolver],
       validate: false,
     }),
-    context: ({ req, res }): MyContext => ({ em: orm.em, req, res, redis }),
+    context: ({ req, res }): MyContext => ({ req, res, redis }),
   });
 
-  apolloServer.applyMiddleware({ app, cors: false,});
+  apolloServer.applyMiddleware({ app, cors: false });
 
   app.listen(4000, () => {
     console.log("server started at 4000");
   });
-  // // const post = orm.em.create(Post, { title: 'my first post'})
-  // // await orm.em.persistAndFlush(post)
-
-  // const posts = await orm.em.find(Post, {})
-  // console.log(posts);
 };
 
 main().catch((err) => {
