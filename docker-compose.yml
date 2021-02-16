@@ -1,0 +1,50 @@
+version: "3.6"
+
+services:
+  # minio:
+  #   image: minio/minio
+  #   ports:
+  #     - "9000:9000"
+  #   volumes:
+  #     - ${PWD}/minio/data:/data
+  #     - ${PWD}/minio/config:/root/.minio
+  #   command: "server /data"
+
+  redis:
+    image: redis:5-alpine
+    ports:
+      - "6379:6379"
+
+  postgres:
+    image: "postgres:9.6.6"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    volumes:
+      - ./lireddit_server/db/postgres-data:/var/lib/postgresql/data
+      # - ${PWD}/db/docker-entrypoint-initdb.d:/docker-entrypoint-initdb.d
+    ports:
+      - "5432:5432"
+
+  lirreddit-web-app:
+    build: ./lireddit_server
+    ports:
+      - "4000:4000"
+    depends_on:
+      - "redis"
+      - "postgres"
+    environment:
+      - POSTGRES_USER=postgres
+      - POSTGRES_PASSWORD=postgres
+    restart: on-failure
+    # command: ["./wait-for-postgres.sh", "db:5432", "--", "node", "dist/index.js"]
+    # command: "node dist/index.js"
+    command: [ "node", "dist/index.js" ]
+
+  # lirreddit-web-front:
+  #   build: ./lireddit_web
+  #   ports:
+  #     - "3000:3000"
+  #   restart: on-failure
+  #   # command: ["./wait-for-it.sh", "db:5432", "--", "node", "dist/index.js"]
+  #   command: "next start"

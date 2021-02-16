@@ -11,7 +11,7 @@ import { useToast } from "@chakra-ui/react";
 import { withUrqlClient } from "next-urql";
 import { createUrqlClient } from "../../utils/createUrqlClient";
 
-const ChangePassword: NextPage<{ token: string }> = () => {
+const ChangePassword: NextPage<{}> = () => {
   const router = useRouter();
   const [, changePassword] = useChangePasswordMutation();
   const toast = useToast();

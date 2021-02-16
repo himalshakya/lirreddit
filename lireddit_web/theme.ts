@@ -1,6 +1,6 @@
 // example theme object
 export default {
-    colors: {...},
+    colors: {},
     fonts: {
       body: "system-ui, sans-serif",
       heading: "Georgia, serif",
